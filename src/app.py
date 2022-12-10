@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Planets, Characters, Favorites_Characters
 #from models import Person
 
 app = Flask(__name__)
@@ -37,15 +37,49 @@ def sitemap():
     return generate_sitemap(app)
 
 @app.route('/user', methods=['GET'])
-def handle_hello():
+def all_user():
+    users = User.query.all()
+    data=[user.serialize() for user in users]
+    return jsonify(data), 200
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+@app.route('/planets', methods=['GET'])
+def all_planets():
+    planet = Planets.query.all()
+    data=[planets.serialize() for planets in planet]
+    return jsonify(data)
+
+@app.route('/people', methods=['GET'])
+def all_people():
+    peoples = Characters.query.all()
+    data = [people.serialize()for people in peoples]
+    return jsonify(data), 200
+
+@app.route('/planets/<int:planet_id>', methods=['GET'])
+def get_planet(planet_id):
+    planet= Planets.query.filter_by(id=planet_id).first()
+    if planet: 
+        return jsonify(planet.serialize())
+    return jsonify({"No existe planeta"}),400
+
+@app.route('/people/<int:people_id>', methods=['GET'])
+def get_pleople(people_id):
+    people= Characters.query.filter_by(id=people_id).first()
+    if people: 
+        return jsonify(people.serialize())
+
+    return jsonify({"No existe "}),400
+
+@app.route('/users/favorites', methods=['GET'])
+def favorites():
 
     return jsonify(response_body), 200
+
+
+
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
+1
