@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planets, Characters, Favorites_Characters
+from models import db, User, Planets, Characters, Favorites
 #from models import Person
 
 app = Flask(__name__)
@@ -69,13 +69,49 @@ def get_pleople(people_id):
 
     return jsonify({"No existe "}),400
 
-@app.route('/users/favorites', methods=['GET'])
+@app.route('/users/favorites', methods=['GET'])   
 def favorites():
+    favorite = Favorites.query.all()
+    data= [favorites.serialize () for favorites in favorite]
+    return jsonify(data), 200
 
-    return jsonify(response_body), 200
+@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])  
+def add_planet(planet_id):
 
+    data= request.json
+    from yourapp import User
+    add_planet= Favorites( planet=date[name],image =data[image])
+    db.session.add(add_planet)
+    db.session.commit()
+    return jsonify({"Planeta añadido"}),200
 
+@app.route('/favorite/people/<int:people_id>', methods=['POST'])  
+def add_people(people_id):
 
+    data= request.json
+    from yourapp import User
+    add_people= Favorites(character=date[name], image=data[image])
+    db.session.add(add_people)
+    db.session.commit()
+    return jsonify({"Personaje añadido"})
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])  
+def delete_planet(planet_id):
+    data= request.json
+    from yourapp import User
+    delete_planet= Planets( planet=date[name], image =data[image])
+    db.session.delete(delete_planet)
+    db.session.commit()
+    return jsonify({"Planeta eliminado"})
+
+@app.route('/favorite/people/<int:people_id>', methods=['DELETE']) 
+def delete_people(people_id):
+    data=request.json
+    from yourapp import User
+    delete_pleople= Characters(planet=date[name], image =data[image])
+    db.session.delete(delete_people)
+    db.session.commit()
+    return jsonify({"Personaje eliminado"})
 
 
 # this only runs if `$ python src/app.py` is executed
