@@ -25,9 +25,10 @@ class User(db.Model):
 class Characters (db.Model):
     id=db.Column(db.Integer, primary_key=True)
     name=db.Column(db.String(80), nullable=False)
-    gender=db.Column(db.String(80), nullable=True)
     image=db.Column(db.String(80))
-    
+    def __repr__(self):
+        return '<Characters %r>' % self.username
+
     def serialize(self):
        return {
             "id": self.id,
@@ -42,7 +43,22 @@ class Planets(db.Model):
     name=db.Column(db.String(80), nullable=False)
     population=db.Column(db.Integer, default =0)
     climate= db.Column(db.String(200))
-    image=db.Column(db.String(200), nullable=True)
+    image=db.Column(db.String(80))
+    def __repr__(self):
+        return '<Planets %r>' % self.username
+
+    def serialize(self):
+       return {
+            "id": self.id,
+            "Name": self.name,
+            "image": self.image
+           
+        }
+class Favorites(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    id_users = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    id_Characters=db.Column(db.Integer, db.ForeignKey('characters.id'), nullable=False)
+    id_planets=db.Column(db.Integer, db.ForeignKey('planets.id'), nullable=False)
 
     def serialize(self):
        return {
@@ -52,25 +68,38 @@ class Planets(db.Model):
            
         }
 
-
-class Favorites(db.Model):
+class FavoritesCharacters(db.Model):
      id = db.Column(db.Integer, primary_key=True)
-     planet=db.Column(db.String(80), nullable=False)
-     image=db.Column(db.String(200), nullable=True, )
-     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) #  para enlazar solo es necesario este metodo 
-     user = db.relationship('User', backref='favorites', lazy=True) # este metodo trae todo los favoritos del usuario
-    #hay que crear dos tablas para favorite-character , favorite-planets y copiar las 4 columnas y asi debe de funcionar. 
-
+     id_Characters=db.Column(db.Integer, nullable=True)
+     name=db.Column(db.String(80), nullable=False)
+     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+     user = db.relationship('User', backref='favoriteCharacter', lazy=True) 
      
+   
+    
      def serialize(self):
        return {
             "id": self.id,
-            "user":self.id_users,
-            "planets/character": self.id_planets,
-            "image": self.id_people
+            "user":self.user_id,
+            "idcharacter": self.id_Characters,
+            "people": self.name,
+             
            
         }
-
-#db.relationship('Address', backref='person', lazy=True)
-#person_id = db.Column(db.Integer, db.ForeignKey('person.id'),
-       
+class FavoritesPlanets(db.Model):
+     id = db.Column(db.Integer, primary_key=True)
+     id_planet=db.Column(db.Integer, nullable=True )
+     planet=db.Column(db.String(80), nullable=False)
+     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) 
+     user = db.relationship('User', backref='favoritePlanet', lazy=True) 
+     
+   
+     def serialize(self):
+       return {
+            "id": self.id,
+            "user":self.user_id,
+            "id_Planet": self.id_planet,
+            "planet": self.planet, 
+            
+            
+        }
