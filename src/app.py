@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planets, Characters, FavoritesCharacters, FavoritesPlanets, Favorites
+from models import db, User, Planets, Characters, FavoritesCharacters, FavoritesPlanets
 #from models import Person
 
 app = Flask(__name__)
@@ -61,9 +61,9 @@ def get_planet(planet_id):
         return jsonify(planet.serialize())
     return jsonify({"No existe planeta"}),400
 
-@app.route('/people/<int:people_id>', methods=['GET'])
-def get_pleople(people_id):
-    people= Characters.query.filter_by(id=people_id).first()
+@app.route('/people/<int:character_id>', methods=['GET'])
+def get_pleople(character_id):
+    people= Characters.query.filter_by(id=character_id).first()
     if people: 
         return jsonify(people.serialize())
 
@@ -75,36 +75,34 @@ def favorites():
     data= [favorites.serialize () for favorites in favorite]
     return jsonify(data), 200
 
-@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])  
-def add_planet(planet_id):
+@app.route('/favorite/planet/<int:user_id>/<int:planet_id>', methods=['POST'])  
+def add_planet(user_id, planet_id):
 
-    data= request.json
-    add_planet= Favorites(planet=date[name], image=data[image])
-    db.session.add(add_planet)
+    planet_to_add= FavoritesPlanets(planet_id=planet_id)
+    db.session.add(planet_to_add)
     db.session.commit()
     return jsonify({"Planeta añadido"}),200
 
-@app.route('/favorite/people/<int:people_id>', methods=['POST'])  
-def add_people(people_id):
+@app.route('/favorite/people/<int:user_id>/<int:character_id>', methods=['POST'])  
+def add_people(user_id, character_id):
 
-    data= request.json
-    add_people= Favorites(character=date[name], image=data[image])
+    character_to_add= FavoritesCharacters(character_id=character_id)
     db.session.add(add_people)
     db.session.commit()
     return jsonify({"Personaje añadido"})
 
-@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])  
-def delete_planet(planet_id):
-    data= request.json
-    removePlanet= Favorites( id = data[id], planet=date[name], image=data[image])
+@app.route('/favorite/planet/<int:user_id>/<int:planet_id>', methods=['DELETE'])  
+def delete_planet(user_id, planet_id):
+    
+    removePlanet= FavoritesPlanets(planet_id=planet_id)
     db.session.delete(removePlanet)
     db.session.commit()
     return jsonify({"Planeta eliminado"})
 
-@app.route('/favorite/people/<int:people_id>', methods=['DELETE']) 
-def delete_people(people_id):
-    data=request.json
-    removeCharacters= Favorites(id = data[id], character=date[name], image=data[image])
+@app.route('/favorite/people/<int:user_id>/<int:character_id>', methods=['DELETE']) 
+def delete_people(user_id, character_id):
+  
+    removeCharacters= FavoritesCharacters(character_id=character_id)
     db.session.delete(removeCharacters)
     db.session.commit()
     return jsonify({"Personaje eliminado"})

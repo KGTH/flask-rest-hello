@@ -54,24 +54,10 @@ class Planets(db.Model):
             "image": self.image
            
         }
-class Favorites(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    id_users = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    id_Characters=db.Column(db.Integer, db.ForeignKey('characters.id'), nullable=False)
-    id_planets=db.Column(db.Integer, db.ForeignKey('planets.id'), nullable=False)
-
-    def serialize(self):
-       return {
-            "id": self.id,
-            "Name": self.name,
-            "image": self.image
-           
-        }
 
 class FavoritesCharacters(db.Model):
      id = db.Column(db.Integer, primary_key=True)
-     id_Characters=db.Column(db.Integer, nullable=True)
-     name=db.Column(db.String(80), nullable=False)
+     character_id=db.Column(db.Integer, nullable=True)
      user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
      user = db.relationship('User', backref='favoriteCharacter', lazy=True) 
      
@@ -88,8 +74,7 @@ class FavoritesCharacters(db.Model):
         }
 class FavoritesPlanets(db.Model):
      id = db.Column(db.Integer, primary_key=True)
-     id_planet=db.Column(db.Integer, nullable=True )
-     planet=db.Column(db.String(80), nullable=False)
+     planet_id=db.Column(db.Integer, nullable=True )
      user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) 
      user = db.relationship('User', backref='favoritePlanet', lazy=True) 
      
