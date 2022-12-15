@@ -78,10 +78,29 @@ def favorites():
 @app.route('/favorite/planet/<int:user_id>/<int:planet_id>', methods=['POST'])  
 def add_planet(user_id, planet_id):
 
-    planet_to_add= FavoritesPlanets(planet_id=planet_id)
-    db.session.add(planet_to_add)
-    db.session.commit()
-    return jsonify({"Planeta añadido"}),200
+    planet_to_add=Planets.query.filter_by(id=planet_id).first()
+    user= User.query.filter_by(id=user_id).first()
+
+    if planet_to_add and user:
+        try:
+            favorite_planet= FavoritesPlanets( 
+                user_id=user_id, 
+                planet_id=planet_id
+            )
+            db.session.add(favorite_planet)
+            db.session.commit()
+            return jsonify({
+                "MSG":"Planeta añadido", 
+                "Nuevo Planeta": favorite_planet.serialize()
+            }),200
+
+        except Exception as error:
+            return jsonify({
+                "MSG":"Error",
+                "Error":error
+                }),400
+
+    return jsonify({"MSG":"Algo no ha funcionado."}),401
 
 @app.route('/favorite/people/<int:user_id>/<int:character_id>', methods=['POST'])  
 def add_people(user_id, character_id):
